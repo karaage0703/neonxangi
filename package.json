@@ -1,0 +1,58 @@
+{
+  "name": "neonxangi",
+  "version": "0.1.0",
+  "description": "OpenShell reference stack for sandboxed xangi workloads",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "bin": {
+    "neonxangi": "./bin/neonxangi",
+    "neonxangi-integration": "./bin/neonxangi-integration.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "web",
+    "blueprint",
+    "Dockerfile",
+    "install.sh",
+    "packaging",
+    "docs",
+    "README.md",
+    "README.en.md",
+    "LICENSE",
+    "licenses"
+  ],
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/write-build-state.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint 'src/**/*.ts' 'tests/**/*.ts' --max-warnings=0",
+    "format": "prettier --write 'src/**/*.ts' 'tests/**/*.ts' 'scripts/**/*.mjs' 'bin/**/*.js' 'web/**/*.{js,css,html}' '*.{json,md}' 'docs/**/*.md'",
+    "format:check": "prettier --check 'src/**/*.ts' 'tests/**/*.ts' 'scripts/**/*.mjs' 'bin/**/*.js' 'web/**/*.{js,css,html}' '*.{json,md}' 'docs/**/*.md'",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "release:check": "if [ -d release-scripts ]; then bash -n release-scripts/*.sh && node --check release-scripts/verify-release.mjs; fi",
+    "bundle": "npm run build && bash packaging/build-bundle.sh",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm run release:check && npm run test:coverage && npm run build"
+  },
+  "dependencies": {
+    "@slack/bolt": "^4.7.3",
+    "discord.js": "^14.27.0",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^22.20.1",
+    "@types/express": "^5.0.6",
+    "@vitest/coverage-v8": "^4.1.11",
+    "eslint": "^10.9.1",
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.12",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.68.0",
+    "vitest": "^4.1.11"
+  }
+}

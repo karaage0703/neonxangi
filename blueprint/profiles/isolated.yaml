@@ -1,0 +1,24 @@
+version: 1
+filesystem_policy:
+  include_workdir: true
+  read_only: [/usr, /lib, /lib64, /bin, /sbin, /etc, /proc, /opt]
+  read_write: [/workspace, /tmp, /dev/null, /var/lib/xangi, /var/lib/neonxangi, /var/log/neonxangi]
+landlock:
+  compatibility: strict
+network_policies:
+  codex_inference:
+    name: codex-inference
+    endpoints:
+      - { host: api.openai.com, port: 443, protocol: rest, enforcement: enforce, access: read-write }
+      - { host: auth.openai.com, port: 443, protocol: rest, enforcement: enforce, access: read-write }
+      - { host: chatgpt.com, port: 443, protocol: rest, enforcement: enforce, access: read-write }
+      - { host: ab.chatgpt.com, port: 443, protocol: rest, enforcement: enforce, access: read-write }
+    binaries:
+      - { path: /usr/local/bin/codex }
+      - { path: /usr/local/lib/node_modules/@openai/codex/** }
+  loopback_xangi:
+    name: loopback-xangi
+    endpoints:
+      - { host: 127.0.0.1, port: 18789, protocol: rest, enforcement: enforce, access: full }
+    binaries:
+      - { path: /usr/local/bin/node }

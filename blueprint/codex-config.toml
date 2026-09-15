@@ -1,0 +1,5 @@
+suppress_unstable_features_warning = true
+web_search = "disabled"
+
+[features]
+respect_system_proxy = true

@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+
+SOURCE=$0
+while [ -L "$SOURCE" ]; do
+  DIRECTORY=$(CDPATH= cd -- "$(dirname -- "$SOURCE")" && pwd)
+  TARGET=$(readlink "$SOURCE")
+  case "$TARGET" in
+    /*) SOURCE=$TARGET ;;
+    *) SOURCE=$DIRECTORY/$TARGET ;;
+  esac
+done
+ROOT=$(CDPATH= cd -- "$(dirname -- "$SOURCE")/.." && pwd)
+
+if [ -z "${NEONXANGI_OPENSHELL:-}" ] && [ -x "$ROOT/runtime/bin/openshell" ]; then
+  NEONXANGI_OPENSHELL="$ROOT/runtime/bin/openshell"
+  export NEONXANGI_OPENSHELL
+fi
+
+if [ -x "$ROOT/runtime/bin/node" ]; then
+  exec "$ROOT/runtime/bin/node" "$ROOT/bin/neonxangi.js" "$@"
+fi
+
+if command -v node >/dev/null 2>&1; then
+  exec node "$ROOT/bin/neonxangi.js" "$@"
+fi
+
+echo "neonxangi: this source checkout requires Node.js 22.16 or newer" >&2
+echo "Install a managed Neon Xangi bundle to use the bundled runtime." >&2
+exit 1

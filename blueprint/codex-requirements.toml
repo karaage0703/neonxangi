@@ -1,0 +1,15 @@
+# These system requirements keep provider-hosted tools from bypassing the
+# OpenShell network policy. They are baked into /etc/codex/requirements.toml.
+allowed_web_search_modes = []
+
+# An explicitly empty allowlist disables user- or project-configured MCP servers.
+[mcp_servers]
+
+[features]
+apps = false
+browser_use = false
+browser_use_external = false
+browser_use_full_cdp_access = false
+in_app_browser = false
+computer_use = false
+plugins = false

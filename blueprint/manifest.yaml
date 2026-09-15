@@ -1,0 +1,22 @@
+schema_version: 1
+name: neonxangi
+version: 0.1.0
+compatibility:
+  openshell: ">=0.0.116,<0.1.0"
+  xangi_release: v0.56.4
+  xangi_commit: 726ecfc7f1e6d9bf7d553c203cff0a7b0a43b84e
+  codex: "0.154.0"
+  claude_code: "2.1.270"
+  github_copilot: "1.0.83"
+  node: "22"
+setup:
+  xangi_owner: sandbox
+  xangi_command: xangi setup --apply
+ports:
+  xangi_internal: 18789
+  integration_forward: 18790
+security:
+  agent_workload_trusted: false
+  raw_credentials_in_sandbox: false
+  policy_mutation_from_sandbox: false
+  host_lifecycle_from_sandbox: false

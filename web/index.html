@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Neon Xangi セットアップ</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="#settings">Neon Xangi</a>
+      <nav id="console-nav" aria-label="設定画面内の移動" hidden>
+        <a href="#settings">設定</a><a href="#status">稼働状況</a
+        ><a href="#policy">権限</a><a href="#activity">履歴</a>
+      </nav>
+      <button id="refresh" type="button" hidden>再読み込み</button>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="kicker">NEONXANGI SETTINGS</p>
+          <h1>Neon Xangi セットアップ</h1>
+        </div>
+        <p class="lede">
+          DiscordまたはSlackの接続先と、Neo
+          Xangiが応答してよい利用者・channelを設定します。
+        </p>
+      </section>
+      <section id="login" class="auth-panel" aria-labelledby="login-title">
+        <h2 id="login-title">手動認証が必要です</h2>
+        <p>
+          通常は<code>neonxangi settings</code
+          >から開くと自動で認証されます。URLを直接開いた場合だけ、次の復旧操作を行ってください。
+        </p>
+        <label for="token">ローカル管理用token</label>
+        <div class="auth-row">
+          <input id="token" type="password" autocomplete="off" /><button
+            id="unlock"
+            type="button"
+          >
+            手動で認証
+          </button>
+        </div>
+        <p id="auth-help">
+          <code>~/.neonxangi/keys/console-token</code
+          >の内容を入力します。これはこのPC内の設定APIを保護する鍵で、DiscordやSlackのtokenとは別物です。通常は入力不要です。
+        </p>
+      </section>
+      <div id="console" hidden>
+        <section class="setup-guide" aria-labelledby="setup-guide-title">
+          <p class="kicker">NEXT STEPS</p>
+          <h2 id="setup-guide-title">この画面で行うこと</h2>
+          <ol>
+            <li>使うplatformだけ有効にする</li>
+            <li>tokenと許可するIDを入力する</li>
+            <li>「設定を保存」後に「Doctorを実行」する</li>
+          </ol>
+          <p class="help">
+            まずsandboxだけ試す場合は、DiscordとSlackを無効のまま保存できます。
+          </p>
+        </section>
+        <section id="settings" aria-labelledby="settings-title">
+          <div class="section-head">
+            <div>
+              <p class="kicker">SETUP &amp; SETTINGS</p>
+              <h2 id="settings-title">接続先と応答範囲</h2>
+            </div>
+            <p>tokenはこのPCの専用領域へ安全に保存し、画面へ再表示しません。</p>
+          </div>
+          <form id="settings-form">
+            <fieldset>
+              <legend>Runtime</legend>
+              <div class="form-grid">
+                <div class="field span-2">
+                  <label for="workspace"
+                    >Workspaceの絶対path
+                    <span aria-hidden="true">*</span></label
+                  ><input
+                    id="workspace"
+                    name="workspace"
+                    required
+                    autocomplete="off"
+                  />
+                  <p class="help">
+                    最初は機密情報を含まないtest repositoryを指定してください。
+                  </p>
+                </div>
+                <div class="field">
+                  <label for="backend">AI backend</label
+                  ><select id="backend" name="backend">
+                    <option value="codex">Codex</option>
+                    <option value="claude-code">Claude Code</option>
+                    <option value="local-llm">Local LLM</option>
+                    <option value="github-copilot">GitHub Copilot CLI</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="profile">Policy profile</label
+                  ><select id="profile" name="profile">
+                    <option value="observe">observe — read-only</option>
+                    <option value="develop">develop — read/write</option>
+                    <option value="research">
+                      research — read-only research
+                    </option>
+                    <option value="operate">
+                      operate — controlled operations
+                    </option>
+                    <option value="isolated">isolated — disposable</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="sandbox-name">Sandbox名</label
+                  ><input
+                    id="sandbox-name"
+                    name="sandbox_name"
+                    required
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="field">
+                  <label for="local-llm-base-url">Local LLM endpoint</label
+                  ><input
+                    id="local-llm-base-url"
+                    name="local_llm_base_url"
+                    autocomplete="off"
+                    placeholder="http://host.openshell.internal:8001"
+                  />
+                  <p class="help">
+                    Local
+                    LLM選択時だけ使用。sandboxから到達するhost名に限定します。
+                  </p>
+                </div>
+                <div class="field">
+                  <label for="local-llm-model">Local LLM model</label
+                  ><input
+                    id="local-llm-model"
+                    name="local_llm_model"
+                    autocomplete="off"
+                    placeholder="qwen3.8-27b"
+                  />
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Discord</legend>
+              <label class="switch"
+                ><input id="discord-enabled" type="checkbox" /> Discord
+                Gatewayを有効にする</label
+              >
+              <div class="form-grid platform-fields" data-platform="discord">
+                <div class="field span-2">
+                  <label for="discord-token">Bot token</label
+                  ><input
+                    id="discord-token"
+                    type="password"
+                    autocomplete="new-password"
+                    spellcheck="false"
+                    placeholder="空欄なら変更しません"
+                  />
+                  <p class="secret-state" id="discord-secret-state"></p>
+                  <p class="help">
+                    tokenはNeo
+                    Xangiの専用領域へ保存します。credentialファイルの準備は不要です。
+                  </p>
+                </div>
+                <div class="field">
+                  <label for="discord-limit">Bot連続返信上限</label
+                  ><input id="discord-limit" type="number" min="1" max="20" />
+                </div>
+                <div class="field">
+                  <label for="discord-users"
+                    >許可user ID <span aria-hidden="true">*</span></label
+                  ><textarea
+                    id="discord-users"
+                    rows="4"
+                    required
+                    aria-describedby="id-help"
+                  ></textarea>
+                </div>
+                <div class="field">
+                  <label for="discord-bots">許可Bot ID（任意）</label
+                  ><textarea id="discord-bots" rows="4"></textarea>
+                </div>
+                <div class="field">
+                  <label for="discord-channels"
+                    >許可channel ID <span aria-hidden="true">*</span></label
+                  ><textarea id="discord-channels" rows="4" required></textarea>
+                </div>
+                <div class="field">
+                  <label for="discord-auto">自動応答channel ID</label
+                  ><textarea id="discord-auto" rows="4"></textarea>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Slack</legend>
+              <label class="switch"
+                ><input id="slack-enabled" type="checkbox" /> Slack Socket
+                Modeを有効にする</label
+              >
+              <div class="form-grid platform-fields" data-platform="slack">
+                <div class="field">
+                  <label for="slack-bot-token">Bot token（xoxb-…）</label
+                  ><input
+                    id="slack-bot-token"
+                    type="password"
+                    autocomplete="new-password"
+                    spellcheck="false"
+                    placeholder="空欄なら変更しません"
+                  />
+                </div>
+                <div class="field">
+                  <label for="slack-app-token">App token（xapp-…）</label
+                  ><input
+                    id="slack-app-token"
+                    type="password"
+                    autocomplete="new-password"
+                    spellcheck="false"
+                    placeholder="空欄なら変更しません"
+                  />
+                </div>
+                <div class="field span-2">
+                  <p class="secret-state" id="slack-secret-state"></p>
+                  <p class="help">
+                    tokenはNeo
+                    Xangiの専用領域へ保存します。dotenvや絶対pathの準備は不要です。
+                  </p>
+                </div>
+                <div class="field">
+                  <label for="slack-users"
+                    >許可user ID <span aria-hidden="true">*</span></label
+                  ><textarea id="slack-users" rows="4" required></textarea>
+                </div>
+                <div class="field">
+                  <label for="slack-channels"
+                    >許可channel ID <span aria-hidden="true">*</span></label
+                  ><textarea id="slack-channels" rows="4" required></textarea>
+                </div>
+                <div class="field span-2">
+                  <label for="slack-auto">自動応答channel ID</label
+                  ><textarea id="slack-auto" rows="3"></textarea>
+                </div>
+              </div>
+            </fieldset>
+            <p id="id-help" class="help">
+              IDは1行に1件。自動応答channelは許可channelにも含めてください。wildcardは使えません。
+            </p>
+            <div class="form-actions">
+              <button id="validate-settings" type="button" class="secondary">
+                検証</button
+              ><button id="save-settings" type="submit">設定を保存</button
+              ><button id="run-doctor" type="button" class="secondary">
+                Doctorを実行
+              </button>
+            </div>
+            <div
+              id="settings-result"
+              class="result"
+              role="status"
+              aria-live="polite"
+            ></div>
+            <details>
+              <summary>保存済み設定を確認</summary>
+              <p class="help">
+                credentialは値ではなく参照pathと検証状態だけを表示します。
+              </p>
+              <pre id="config-output" tabindex="0"></pre>
+            </details>
+          </form>
+        </section>
+        <section id="status" aria-labelledby="status-title">
+          <div class="section-head">
+            <h2 id="status-title">稼働状況</h2>
+            <p>
+              現在起動中のhostとOpenShell
+              gatewayの状態です。保存した設定は再起動後に反映されます。
+            </p>
+          </div>
+          <dl id="status-grid" class="status-grid"></dl>
+        </section>
+        <section id="policy" aria-labelledby="policy-title">
+          <div class="section-head">
+            <div>
+              <p class="kicker">CAPABILITY BOUNDARY</p>
+              <h2 id="policy-title">できること・できないこと</h2>
+            </div>
+            <p>
+              sandboxから見たファイル・通信・host操作の境界です。AI
+              backendのWeb機能と、sandboxからの直接通信は分けて表示します。
+            </p>
+          </div>
+          <div id="policy-notice" class="policy-notice" role="status"></div>
+          <dl id="policy-facts" class="policy-facts"></dl>
+          <div id="capability-groups" class="capability-groups"></div>
+          <div class="policy-detail-grid">
+            <article>
+              <h3>許可された通信先</h3>
+              <div id="network-list" class="network-list"></div>
+            </article>
+            <article>
+              <h3>Platformの応答範囲</h3>
+              <div id="platform-list" class="platform-list"></div>
+            </article>
+          </div>
+          <details>
+            <summary>ファイル境界とPolicy定義を確認</summary>
+            <pre id="policy-output" tabindex="0"></pre>
+          </details>
+        </section>
+        <section id="approvals" aria-labelledby="approvals-title">
+          <div class="section-head">
+            <h2 id="approvals-title">承認</h2>
+            <p>副作用を伴う操作はhost管理者が判断するまで待機します。</p>
+          </div>
+          <div id="approval-list" class="approval-list"></div>
+        </section>
+        <section id="activity" aria-labelledby="activity-title">
+          <div class="section-head">
+            <h2 id="activity-title">操作履歴</h2>
+            <p>Neon Xangiが許可・拒否・実行した操作を確認します。</p>
+          </div>
+          <div class="table-wrap" tabindex="0">
+            <table>
+              <thead>
+                <tr>
+                  <th>時刻</th>
+                  <th>Component</th>
+                  <th>操作</th>
+                  <th>結果</th>
+                  <th>Correlation</th>
+                </tr>
+              </thead>
+              <tbody id="audit-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+      <p id="error" role="alert"></p>
+    </main>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
